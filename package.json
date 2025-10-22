@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Simple WebSocket server to sync reactions for TJ LEXICORE",
   "main": "server.js",
-  "homepage": "https://tjjune956-collab.github.io/TJ-LEXICORE"
+  "homepage": "https://tjjune956-collab.github.io/TJ-LEXICORE",
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d build"
   "scripts": {
     "start": "node server.js"
   },
