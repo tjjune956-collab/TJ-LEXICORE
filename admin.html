@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TJ LEXICORE - Admin</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="site-header"><h1>Admin Panel</h1><a href="index.html">Public Site</a></header>
+    <main class="admin-panel" id="admin">
+      <div id="login-row">
+        <div class="form-row">
+          <label>Admin Password (basic):</label>
+          <input id="pw" type="password" placeholder="Enter admin password">
+        </div>
+        <button id="login">Login</button>
+      </div>
+
+      <div id="panel" style="display:none">
+        <h2>Create Post</h2>
+        <div class="form-row">
+          <input id="title" placeholder="Title">
+          <textarea id="body" rows="4" placeholder="Body"></textarea>
+          <label>Expiry date (optional):</label>
+          <input id="postExpiry" type="datetime-local" placeholder="YYYY-MM-DDTHH:MM">
+          <label>Allowed posters (comma usernames, empty=all):</label>
+          <input id="allowedPosters" placeholder="user1,user2">
+          <select id="mediaType">
+            <option value="">No media</option>
+            <option value="image">Image URL / Upload</option>
+            <option value="video">Video URL / Upload</option>
+            <option value="link">Link</option>
+          </select>
+          <input id="media" placeholder="Media URL">
+          <input id="postClue" placeholder="Optional: Secret clue text (hidden)" title="A clue for the secret code hunt; stored with the post but only visible as a hint if revealed." />
+          <label style="font-size:13px"><input type="checkbox" id="postClueReveal"> Reveal hint publicly (show a short hint)</label>
+          <input id="lockPasscode" placeholder="Optional: Lock post with passcode (admin)" title="If provided, users must enter this passcode to unlock special features">
+          <label>Or upload file:</label>
+          <input id="mediaFile" type="file" accept="image/*,video/*" multiple>
+        </div>
+        <button id="savePost">Save Post</button>
+        <h3>Existing Posts</h3>
+        <div id="existing"></div>
+        <hr>
+  <h3>Trash (Deleted / Expired Posts)</h3>
+  <div id="trashList" style="max-height:160px;overflow:auto;border:1px solid rgba(255,255,255,0.03);padding:8px;border-radius:6px;background:transparent;margin-bottom:8px"></div>
+  <div style="display:flex;gap:8px;margin-bottom:12px"><button id="emptyTrashBtn">Empty Trash</button><button id="restoreAllTrashBtn">Restore All</button></div>
+        <h3>User Management</h3>
+        <div id="userManagement" style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="newAdminUsername" placeholder="New admin username">
+            <input id="newAdminPassword" type="password" placeholder="Admin password">
+            <button id="createAdminBtn">Create Admin</button>
+          </div>
+          <div id="userList" style="max-height:200px;overflow:auto;border:1px solid rgba(255,255,255,0.03);padding:8px;border-radius:6px;background:transparent"></div>
+        </div>
+        <hr>
+        <h3>Announcements / Notes</h3>
+        <div>
+          <textarea id="adminNotes" placeholder="Write an announcement or note to appear on the public site" style="width:100%;height:100px"></textarea>
+          <div style="display:flex;gap:8px;margin-top:6px"><button id="saveNotes">Save Announcement</button><button id="clearNotes">Clear</button></div>
+        </div>
+        <hr>
+        <h2>Dashboard</h2>
+        <div id="dashboard">
+          <div>Total users: <span id="dashUsers">0</span></div>
+          <div>Followers: <span id="dashFollowers">0</span></div>
+          <div>Total reactions: <span id="dashReactions">0</span></div>
+          <div>Total memes: <span id="dashMemes">0</span></div>
+          <div>Total comments: <span id="dashComments">0</span></div>
+          <div>Recent commenters: <span id="dashCommenters">-</span></div>
+          <div style="margin-top:8px">Quiz stats: <span id="dashQuizStats">No quiz data</span></div>
+          <div>Followers list:</div>
+          <div id="followersList" style="max-height:120px;overflow:auto;border:1px solid rgba(255,255,255,0.03);padding:8px;border-radius:6px;background:transparent;margin-bottom:8px"></div>
+          <div>Recent comments:</div>
+          <div id="commentsList" style="max-height:180px;overflow:auto;border:1px solid rgba(255,255,255,0.03);padding:8px;border-radius:6px;background:transparent"></div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="refreshDash">Refresh</button>
+            <button id="openLeaderAdmin">Open Leaderboards</button>
+            <button id="exportAdminData">Export Data</button>
+          </div>
+          <hr>
+          <h3>Polls (Admin)</h3>
+          <div style="display:flex;gap:8px;flex-direction:column">
+            <input id="pollTitle" placeholder="Poll title (e.g. Which topic?)" />
+            <input id="pollOptions" placeholder="Comma-separated options (e.g. A,B,C)" />
+            <label><input type="checkbox" id="pollActive"> Make poll active</label>
+            <button id="savePoll">Save Poll</button>
+          </div>
+          <div id="pollList" style="margin-top:8px"></div>
+        </div>
+        <hr>
+        <section style="margin-top:16px">
+          <h3>Quiz Management</h3>
+          <p>Create multiple-choice questions. Saved locally and synced to server if enabled.</p>
+          <div>
+            <input id="quizQuestion" placeholder="Question text" style="width:70%">
+          </div>
+          <div style="margin-top:6px">
+            <input id="quizOptionA" placeholder="Option A">
+            <input id="quizOptionB" placeholder="Option B">
+            <input id="quizOptionC" placeholder="Option C">
+            <input id="quizOptionD" placeholder="Option D">
+          </div>
+          <div style="margin-top:6px">
+            <label>Correct:</label>
+            <select id="quizCorrect">
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+            </select>
+            <button id="addQuizQ">Add Question</button>
+          </div>
+          <div style="margin-top:12px">
+            <h4>Bulk import questions</h4>
+            <p>Paste a JSON array of questions or upload a .json file. Each item should be { "question": "...", "options": ["A","B","C","D"], "correct": "A" } </p>
+            <textarea id="bulkQuizInput" placeholder='[ { "question": "...", "options": ["A","B","C","D"], "correct": "A" } ]' style="width:100%;height:120px"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <input id="bulkQuizFile" type="file" accept="application/json">
+              <button id="importBulkQuiz">Import Questions</button>
+            </div>
+          </div>
+          <div style="margin-top:12px">
+            <h4>Quick multi-entry (plain text)</h4>
+            <p>Type or paste questions in simple blocks. Format per block (separate blocks with an empty line):</p>
+            <pre style="background:transparent;color:var(--muted);font-size:13px">Question text
+  Option A
+  Option B
+  Option C
+  Option D
+  Correct: A</pre>
+            <textarea id="quickQuizInput" placeholder="Question\nOption A\nOption B\nOption C\nOption D\nCorrect: A\n\nAnother question..." style="width:100%;height:160px"></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button id="importQuickQuiz">Import Plain Questions</button>
+              <button id="clearQuickQuiz">Clear</button>
+            </div>
+          </div>
+          <div style="margin-top:8px">
+            <h4>Existing Questions</h4>
+            <ul id="quizList"></ul>
+            <div style="margin-top:8px"><a href="quiz_stats.html">Open detailed Quiz stats</a></div>
+          </div>
+        </section>
+        <hr>
+        <hr>
+        <section style="margin-top:16px">
+          <h3>Engagement Graph</h3>
+          <div id="engagementGraph" style="width:100%;height:200px;background:transparent;border:1px solid rgba(255,255,255,0.03);padding:8px;border-radius:6px"></div>
+          <div style="font-size:13px;color:var(--muted);margin-top:6px">Shows comments & reaction counts per day for the last 30 days.</div>
+        </section>
+        <h2>Memes</h2>
+        <div class="form-row">
+          <input id="memeTitleAdmin" placeholder="Title">
+          <select id="memeTypeAdmin"><option value="image">Image URL / Upload</option><option value="video">Video URL / Upload</option></select>
+          <input id="memeUrlAdmin" placeholder="Media URL">
+          <label>Or upload file:</label>
+          <input id="memeFileAdmin" type="file" accept="image/*,video/*" multiple>
+        </div>
+        <button id="saveMemeAdmin">Save Meme</button>
+        <div style="margin-top:12px">
+          <h3>Meme Battle</h3>
+          <p>Create a meme battle by selecting meme IDs (comma-separated) and start it; users vote once per battle.</p>
+          <input id="battleMemeIds" placeholder="m_123,m_124" style="width:60%">
+          <button id="startBattle">Start Battle</button>
+          <button id="endBattle">End Battle</button>
+          <div id="battleStatus" style="margin-top:8px">No active battle</div>
+        </div>
+        <hr>
+        <section style="margin-top:16px">
+          <h3>Locked Posts Management</h3>
+          <p>View and manage posts that were locked with an admin passcode.</p>
+          <div id="lockedList" style="max-height:200px;overflow:auto;border:1px solid rgba(255,255,255,0.03);padding:8px;border-radius:6px;background:transparent"></div>
+          <h4 style="margin-top:12px">Unlocked Users</h4>
+          <div id="unlockedUsers" style="max-height:120px;overflow:auto;border:1px solid rgba(255,255,255,0.03);padding:8px;border-radius:6px;background:transparent"></div>
+        </section>
+      </div>
+    </main>
+    <p class="footer">Note: Admin password is stored client-side only. This is a basic protection for local use.</p>
+  </div>
+  <script src="admin.js"></script>
+  <footer class="footer">© 2025 TJ LEXICORE. All rights reserved.</footer>
+</body>
+</html>

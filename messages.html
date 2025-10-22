@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TJ LEXICORE — Messages</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header><h1>Messages</h1><a href="index.html">Back</a></header>
+  <main class="container">
+    <div id="convos"></div>
+    <div id="chatArea"></div>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const cur = getCurrentUser(); if(!cur || !cur.username){ document.getElementById('convos').innerHTML = '<p>Please log in to view messages.</p>'; return }
+      const me = cur.username;
+      // list convos with followers only
+      const followers = getFollowersOf(me) || [];
+      const convosDiv = document.getElementById('convos'); convosDiv.innerHTML='';
+      followers.forEach(f=>{ const b = document.createElement('button'); b.textContent = f; b.addEventListener('click', ()=>{ openConvo(f); }); convosDiv.appendChild(b); });
+      function openConvo(peer){ const chatArea = document.getElementById('chatArea'); chatArea.innerHTML=''; const conv = loadConversation(me, peer); const box = document.createElement('div'); box.style.maxHeight='300px'; box.style.overflow='auto'; conv.forEach(m=>{ const el = document.createElement('div'); const users = loadUsers(); const author = users.find(u=>u.username === m.from) || {}; const avatar = author.avatar || ''; el.innerHTML = `<div style="display:flex;gap:8px;align-items:center"><img src="${avatar}" style="width:32px;height:32px;border-radius:50%"><strong>${m.from}</strong>: ${m.text}</div>`; box.appendChild(el); }); chatArea.appendChild(box); // clear unread for this convo
+        try{ clearUnreadForConversation(convoId(me,peer)); }catch(e){}
+        const input = document.createElement('input'); const send = document.createElement('button'); send.textContent='Send'; send.addEventListener('click', ()=>{ const t = input.value && input.value.trim(); if(!t) return; const curUser = getCurrentUser(); const from = curUser && curUser.username ? curUser.username : me; sendDirectMessageAndBroadcast(from, peer, t); input.value=''; openConvo(peer); }); chatArea.appendChild(input); chatArea.appendChild(send); }
+    });
+  </script>
+</body>
+</html>

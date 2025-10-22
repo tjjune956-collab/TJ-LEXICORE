@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TJ LEXICORE - Memes</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <h1>Memes - TJ LEXICORE</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="admin.html" style="margin-left:12px">Admin Panel</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <p class="tagline">Only admin may post memes; users can view, react, and comment.</p>
+    <section id="memesList"></section>
+  </main>
+
+  <script>
+  // Viewer-only memes page: renders memes, reactions and comments using shared client functions in app.js
+  function loadMemesLocal(){ try{ return JSON.parse(localStorage.getItem('tj_memes')||'[]') }catch(e){return[]} }
+
+  function renderMemes(){
+    const list = loadMemesLocal();
+    const container = document.getElementById('memesList');
+    container.innerHTML = '';
+  // check for active battle
+  const battle = (function(){ try{ return JSON.parse(localStorage.getItem('tj_battle')||'null') }catch(e){return null} })();
+    const reactions = loadReactions();
+    list.slice().reverse().forEach(m => {
+      const el = document.createElement('article'); el.className = 'post';
+      const title = document.createElement('h3'); title.textContent = m.title || '';
+      const media = document.createElement('div'); media.className = 'post-media';
+      if(m.type === 'image'){ const img = document.createElement('img'); img.src = m.url; media.appendChild(img); }
+      else { const v = document.createElement('video'); v.src = m.url; v.controls = true; media.appendChild(v); }
+  // download/share
+  const dl = document.createElement('a'); dl.textContent = 'Download'; dl.style.marginLeft='8px'; dl.href = m.url; dl.download = (m.title||'meme')+'.png'; media.appendChild(dl);
+  const sh = document.createElement('button'); sh.textContent = 'Share'; sh.style.marginLeft='6px'; sh.addEventListener('click', async ()=>{ try{ if(navigator.share){ await navigator.share({ title: m.title, url: m.url }); } else alert('Share not supported'); }catch(e){ alert('Share failed') } }); media.appendChild(sh);
+
+      const rdiv = document.createElement('div'); rdiv.className = 'reactions';
+      emojiList.forEach(e => {
+        const btn = document.createElement('button'); btn.className = 'react-btn';
+        btn.innerHTML = `${e} <span class="react-count"></span>`;
+        const entry = (reactions[m.id] && reactions[m.id][e]);
+        const count = entry ? (entry.count || 0) : 0;
+        btn.querySelector('.react-count').textContent = count;
+        const uid = getReactiveId();
+        const reacted = entry && entry.users && entry.users.indexOf(uid) !== -1;
+        if(reacted) btn.classList.add('reacted');
+        btn.addEventListener('click', ()=>{ btn.classList.add('pop'); setTimeout(()=>btn.classList.remove('pop'),260); toggleReaction(m.id, e); renderMemes(); });
+        rdiv.appendChild(btn);
+      });
+
+      // comments
+      const commentsDiv = document.createElement('div'); commentsDiv.className='comments';
+  const comments = loadCommentsForPost(m.id);
+  comments.forEach(c=>{
+        const ce = document.createElement('div'); ce.className='comment';
+        const meta = document.createElement('div'); meta.className='meta'; meta.textContent = `${c.author} • ${new Date(c.at).toLocaleString()}`;
+        const body = document.createElement('div'); body.textContent = c.text;
+        ce.appendChild(meta); ce.appendChild(body); commentsDiv.appendChild(ce);
+      });
+      const form = document.createElement('div'); form.className='comment-form';
+      const input = document.createElement('input'); input.placeholder='Write a comment...';
+      const cbtn = document.createElement('button'); cbtn.textContent='Comment';
+      cbtn.addEventListener('click', ()=>{ const text = input.value && input.value.trim(); if(!text) return; addComment(m.id, text); input.value=''; renderMemes(); });
+      form.appendChild(input); form.appendChild(cbtn); commentsDiv.appendChild(form);
+
+      el.appendChild(title); el.appendChild(media); el.appendChild(rdiv); el.appendChild(commentsDiv);
+      // battle voting UI
+      if(battle && battle.memes && battle.memes.indexOf(m.id) !== -1){
+        const vdiv = document.createElement('div'); vdiv.style.marginTop='8px'; const voteBtn = document.createElement('button'); voteBtn.textContent = 'Vote';
+        // disable if already voted
+        const user = getCurrentUser(); const uname = user && user.username ? user.username : getReactiveId(); const votes = battle.votes || {};
+        let already = false; Object.keys(votes).forEach(k=>{ if(votes[k].indexOf(uname)!==-1) already = true; });
+        if(already) voteBtn.disabled = true;
+        voteBtn.addEventListener('click', ()=>{ if(already){ alert('You already voted in this battle'); return } votes[m.id] = votes[m.id] || []; votes[m.id].push(uname); localStorage.setItem('tj_battle', JSON.stringify(battle)); voteBtn.disabled = true; alert('Vote recorded'); }); vdiv.appendChild(voteBtn);
+        // show counts if battle ended or always show live counts
+        const cnt = (votes[m.id] || []).length; const cntEl = document.createElement('span'); cntEl.style.marginLeft='8px'; cntEl.textContent = `Votes: ${cnt}`; vdiv.appendChild(cntEl);
+        el.appendChild(vdiv);
+      }
+      container.appendChild(el);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', ()=>{ renderMemes(); });
+  // listen for remote updates to memes/posts/reactions via existing WS handler in app.js
+  </script>
+  <footer class="footer">© 2025 TJ LEXICORE. All rights reserved.</footer>
+</body>
+</html>

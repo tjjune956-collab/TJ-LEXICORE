@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Login — TJ LEXICORE</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="container">
+    <h1>Login</h1>
+    <div class="admin-panel">
+      <div class="form-row">
+        <input id="loginUsername" placeholder="Username">
+        <input id="loginPassword" type="password" placeholder="Password">
+      </div>
+      <div style="display:flex;gap:8px"><button id="loginSubmit">Login</button><a href="register.html">Create an account</a></div>
+      <div id="loginStatus" style="margin-top:8px;color:var(--muted);font-size:13px"></div>
+    </div>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+      // prefill username if redirected from registration
+      try{ const pre = sessionStorage.getItem('prefill_login_username'); if(pre){ document.getElementById('loginUsername').value = pre; sessionStorage.removeItem('prefill_login_username'); document.getElementById('loginPassword').focus(); } }catch(e){}
+      document.getElementById('loginSubmit').addEventListener('click', ()=>{
+        const username = document.getElementById('loginUsername').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const status = document.getElementById('loginStatus'); status.textContent = 'Attempting login...';
+        const e = new CustomEvent('external-login', { detail: { username, password } });
+        window.dispatchEvent(e);
+        // small timeout to show result or errors set by loginUser via alerts; if session contains welcome_pending, consider success
+        setTimeout(()=>{
+          const w = sessionStorage.getItem('welcome_pending');
+          if(w && w === username){ status.textContent = 'Login succeeded — redirecting...'; }
+          else { status.textContent = 'Login failed — check credentials.'; }
+        }, 250);
+      });
+    });
+  </script>
+</body>
+</html>

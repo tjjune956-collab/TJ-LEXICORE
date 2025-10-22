@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Register — TJ LEXICORE</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="container">
+    <h1>Register</h1>
+    <div class="admin-panel">
+      <div class="form-row">
+        <input id="regUsername" placeholder="Username">
+        <input id="regPassword" type="password" placeholder="Password">
+        <label>Avatar (optional)</label>
+        <input id="regAvatar" type="file" accept="image/*">
+      </div>
+      <div style="display:flex;gap:8px"><button id="registerSubmit">Register</button><a href="login.html">Already have an account?</a></div>
+    </div>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const el = document.getElementById('registerSubmit');
+      el.addEventListener('click', ()=>{
+        // reuse app.js registration logic via custom event
+        const username = document.getElementById('regUsername').value.trim();
+        const password = document.getElementById('regPassword').value;
+        const avatarInput = document.getElementById('regAvatar');
+        const e = new CustomEvent('external-register', { detail: { username, password, avatarInput } });
+        window.dispatchEvent(e);
+      });
+    });
+  </script>
+</body>
+</html>

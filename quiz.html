@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TJ LEXICORE — Quiz</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>TJ LEXICORE — Quiz</h1>
+    <a href="index.html">Back to Feed</a>
+  </header>
+  <main class="container">
+    <div id="quizContainer">
+      <p id="quizIntro">Answer the questions below. Your progress is saved locally for offline play.</p>
+      <div id="questionArea"></div>
+      <div style="margin-top:12px">
+        <button id="prevQ">Previous</button>
+        <button id="nextQ">Next</button>
+        <button id="submitQuiz">Submit</button>
+      </div>
+      <div id="quizResult" style="margin-top:12px"></div>
+    </div>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    // quiz client logic will be in app.js helpers; keep a small bootstrap here
+    document.addEventListener('DOMContentLoaded', ()=>{
+      if(window.initQuizPage) window.initQuizPage();
+    });
+  </script>
+</body>
+</html>

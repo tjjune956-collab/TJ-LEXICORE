@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TJ LEXICORE</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#7c3aed">
+</head>
+<body>
+  <header class="site-header">
+    <h1>TJ LEXICORE</h1>
+    <p class="tagline">Powered by AI "shazmaz"</p>
+    <nav>
+      <a href="admin.html">Admin Panel</a>
+  <a href="memes.html" style="margin-left:12px">Memes</a>
+  <a href="quiz.html" style="margin-left:12px">Quiz</a>
+  <a href="profile.html" style="margin-left:12px">Profile</a>
+  <a href="messages.html" style="margin-left:12px">Messages</a>
+  <a href="funbase.html" style="margin-left:12px">FUN BASE</a>
+  <a href="#" id="leaderboardBtn" style="margin-left:12px">Leaderboards</a>
+    </nav>
+    <div id="auth" class="auth">
+        <span id="userDisplay" style="margin-right:8px"></span>
+    <button id="followBtn">Follow</button>
+    <button id="inboxBtn" title="Messages" style="position:relative">
+      Inbox <span id="inboxBadge" style="background:#ff4d4f;border-radius:999px;padding:2px 6px;margin-left:6px;color:#fff;font-size:12px;display:none">0</span>
+    </button>
+    <button id="showLogin">Login</button>
+        <button id="showRegister">Register</button>
+        <button id="logoutBtn" style="display:none">Logout</button>
+      </div>
+  </header>
+  <div class="container" style="max-width:980px;margin:12px auto">
+    <div style="display:flex;gap:8px;align-items:center">
+      <input id="searchInput" placeholder="Search posts..." style="flex:1;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit">
+      <button id="settingsBtn" style="padding:8px;border-radius:6px">Settings</button>
+    </div>
+  </div>
+  <div class="container" style="max-width:980px;margin:6px auto">
+    <div id="announcementArea" style="padding:10px;border-radius:6px;background:linear-gradient(90deg,rgba(124,58,237,0.06),rgba(59,130,246,0.04));margin-bottom:12px;color:var(--muted)"></div>
+  </div>
+  <div class="container" style="max-width:980px;margin:6px auto;display:flex;gap:12px;align-items:flex-start">
+    <div style="flex:1">
+      <!-- anonymous toggle moved above game link -->
+      <div style="margin-bottom:8px"><button id="anonToggleTop" style="padding:8px;border-radius:6px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:var(--muted)">Browse Anonymously</button></div>
+      <a href="game.html" style="display:inline-block;margin-bottom:8px">Play Offline Game</a>
+    </div>
+  </div>
+
+  <!-- Community chat removed (simple site) -->
+  <!-- Install prompt banner -->
+  <div id="installBanner" style="display:none;position:fixed;left:12px;right:12px;bottom:18px;background:rgba(0,0,0,0.7);padding:10px;border-radius:8px;z-index:300;display:flex;justify-content:space-between;align-items:center;gap:8px">
+    <span>Install TJ LEXICORE for quick access</span>
+    <div>
+      <button id="installBtn">Install</button>
+      <button id="dismissInstall" style="margin-left:8px">Later</button>
+    </div>
+  </div>
+
+  <main id="content">
+  <section id="pollArea" style="max-width:980px;margin:12px auto"></section>
+  <section id="posts"></section>
+    <section id="auth-forms" style="max-width:980px;margin:16px auto">
+      <div id="loginForm" style="display:none" class="admin-panel">
+        <h3>Login</h3>
+        <div class="form-row">
+          <input id="loginUsername" placeholder="Username">
+          <input id="loginPassword" placeholder="Password" type="password">
+        </div>
+        <button id="loginSubmit">Login</button>
+      </div>
+
+      <div id="registerForm" style="display:none" class="admin-panel">
+        <h3>Register</h3>
+        <div class="form-row">
+          <input id="regUsername" placeholder="Username">
+          <input id="regPassword" placeholder="Password" type="password">
+          <label>Avatar (optional):</label>
+          <input id="regAvatar" type="file" accept="image/*">
+        </div>
+        <button id="registerSubmit">Register</button>
+      </div>
+    </section>
+  </main>
+
+  <template id="post-template">
+    <article class="post">
+      <h2 class="post-title"></h2>
+      <div class="post-body"></div>
+      <div class="post-media"></div>
+      <div class="reactions"></div>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+  <!-- M-Pesa donate modal -->
+  <div id="mpesaModal" style="display:none">
+    <div class="mpesa-modal-backdrop"></div>
+    <div class="mpesa-modal">
+      <h3>Donate via M-Pesa (Ksh)</h3>
+      <p>Paybill: <strong id="mpesa-paybill">123123</strong> | Account: <strong id="mpesa-account">TJLEX</strong></p>
+      <ol>
+        <li>Go to M-Pesa &gt; Lipa na M-Pesa &gt; Paybill</li>
+        <li>Enter Paybill: <strong id="mpesa-paybill-2">123123</strong></li>
+        <li>Use Account: <strong id="mpesa-account-2">TJLEX</strong></li>
+        <li>Enter amount in Ksh and complete payment</li>
+      </ol>
+      <div class="form-row">
+        <input id="donorName" placeholder="Your name (optional)">
+        <input id="donationAmount" placeholder="Amount (Ksh)" type="number" min="1">
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="donationConfirm">I've paid</button>
+        <button id="donationClose">Close</button>
+      </div>
+      <p style="color:var(--muted);font-size:12px;margin-top:8px">Tip: You can paste the Paybill & Account into your M-Pesa app.</p>
+    </div>
+  </div>
+  <!-- Settings modal -->
+  <div id="settingsModal" style="display:none">
+    <div class="mpesa-modal-backdrop"></div>
+    <div class="mpesa-modal">
+      <h3>Settings</h3>
+      <div class="form-row">
+        <label><input id="setting_animate" type="checkbox"> Enable animations</label>
+        <label><input id="setting_sync" type="checkbox"> Enable real-time sync (WS)</label>
+      </div>
+      <div class="form-row" style="margin-top:8px">
+        <label>Theme:
+          <select id="setting_theme">
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </label>
+      </div>
+      <div class="form-row" style="margin-top:8px">
+        <label><input id="setting_notify" type="checkbox"> Enable notifications</label>
+        <label style="margin-left:12px">Language:
+          <select id="setting_language"><option value="en">English</option><option value="sw">Swahili</option></select>
+        </label>
+      </div>
+      <div class="form-row" style="margin-top:8px">
+        <label>Privacy:</label>
+        <select id="setting_privacy">
+          <option value="public">Public</option>
+          <option value="private">Private (require login to view)</option>
+        </select>
+        <label style="margin-left:12px">Layout:
+          <select id="setting_layout"><option value="list">List</option><option value="cards">Cards</option></select>
+        </label>
+      </div>
+      <hr>
+      <div>
+        <h4>Account</h4>
+        <div class="form-row">
+          <input id="pw_current" type="password" placeholder="Current password">
+          <input id="pw_new" type="password" placeholder="New password">
+          <input id="pw_confirm" type="password" placeholder="Confirm new password">
+        </div>
+        <div style="margin-top:8px"><button id="changePasswordBtn">Change password</button></div>
+      </div>
+      <div style="display:flex;gap:8px"><button id="settingsSave">Save</button><button id="settingsClose">Close</button></div>
+      <hr>
+      <div>
+        <h4>Data & Sync</h4>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+          <button id="exportDataBtn">Export progress (download JSON)</button>
+          <input id="importDataFile" type="file" accept="application/json" style="display:none">
+          <button id="importDataBtn">Import progress (upload JSON)</button>
+          <button id="syncDataBtn">Sync to server (if connected)</button>
+        </div>
+        <small style="color:var(--muted)">Export includes clue progress, unlocked users, reactions, comments and posts. Import will merge keys into current localStorage.</small>
+      </div>
+    </div>
+  </div>
+  <!-- Leaderboard modal -->
+  <div id="leaderboardModal" style="display:none">
+    <div class="mpesa-modal-backdrop"></div>
+    <div class="mpesa-modal" style="max-width:720px">
+      <h3>Leaderboards</h3>
+      <div id="leaderboardContent" style="max-height:480px;overflow:auto"></div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px"><button id="leaderboardClose">Close</button></div>
+    </div>
+  </div>
+  <footer class="footer">© 2025 TJ LEXICORE. All rights reserved.</footer>
+  <!-- floating buttons removed; notification request moved into Settings -->
+</body>
+</html>

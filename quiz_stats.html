@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Quiz Stats</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header><h1>Quiz Statistics</h1><a href="admin.html">Back</a></header>
+  <main class="container">
+    <div id="statsArea"></div>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const stats = document.getElementById('statsArea');
+      const quiz = loadQuiz(); const subs = JSON.parse(localStorage.getItem('tj_quiz_submissions')||'{}');
+      if(!quiz || quiz.length === 0){ stats.innerHTML = '<p>No quiz questions.</p>'; return }
+      quiz.forEach(q=>{
+        const arr = subs[q.id] || [];
+        const right = arr.filter(x=>x.correct).length; const wrong = arr.length - right;
+        const block = document.createElement('div'); block.style.marginBottom='12px'; block.innerHTML = `<h3>${escapeHtml(q.question)}</h3><div>Correct: ${right} | Wrong: ${wrong} | Total answers: ${arr.length}</div>`;
+        const list = document.createElement('div'); arr.forEach(a=>{ const li = document.createElement('div'); li.innerHTML = `<strong>${a.user}</strong> answered ${a.answer} <span style="color:var(--muted);font-size:12px">${new Date(a.at).toLocaleString()}</span>`; list.appendChild(li); }); block.appendChild(list); stats.appendChild(block);
+      });
+    });
+  </script>
+</body>
+</html>

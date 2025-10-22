@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TJ LEXICORE — Profile</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header><h1>Profile</h1><a href="index.html">Back</a></header>
+  <main class="container">
+    <div id="profileArea"></div>
+    <div style="margin-top:12px">
+      <h3>Direct Messages</h3>
+      <div id="dmArea"></div>
+    </div>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const params = new URLSearchParams(location.search);
+      const user = params.get('user');
+      const cur = getCurrentUser();
+      if(!user){ document.getElementById('profileArea').innerHTML = '<p>No user specified</p>'; return }
+  const followers = getFollowersOf(user);
+  const following = getFollowingOf(user);
+  const users = loadUsers(); const userRec = users.find(u=>u.username === user) || {};
+      const curName = cur && cur.username ? cur.username : null;
+      let html = `<h2>${user}</h2><div>Followers: ${followers.length}</div><div>Following: ${following.length}</div>`;
+      if(curName && curName !== user){
+        const isFollowing = (getFollowingOf(curName)||[]).indexOf(user) !== -1;
+        html += `<div style="margin-top:8px"><button id="followToggle">` + (isFollowing ? 'Unfollow' : 'Follow') + `</button></div>`;
+      }
+  document.getElementById('profileArea').innerHTML = `<div style="display:flex;gap:12px;align-items:center"><img src="${userRec.avatar||''}" style="width:80px;height:80px;border-radius:50%"> <div>${html}</div></div>`;
+      if(curName && curName !== user){ document.getElementById('followToggle').addEventListener('click', ()=>{ const f = (getFollowingOf(curName)||[]).indexOf(user) !== -1; if(f){ unfollowUser(curName, user); document.getElementById('followToggle').textContent = 'Follow'; } else { followUser(curName, user); document.getElementById('followToggle').textContent = 'Unfollow'; } }); }
+      // DM loader
+      const dmArea = document.getElementById('dmArea');
+      function renderDM(){
+        const conv = loadConversation(user, cur && cur.username ? cur.username : getReactiveId());
+        dmArea.innerHTML = '';
+        const box = document.createElement('div'); box.style.maxHeight='300px'; box.style.overflow='auto'; conv.forEach(m=>{ const el = document.createElement('div'); el.innerHTML = `<strong>${m.from}</strong>: ${m.text} <span style="color:var(--muted);font-size:12px">${new Date(m.at).toLocaleString()}</span>`; box.appendChild(el) }); dmArea.appendChild(box);
+        const input = document.createElement('input'); input.placeholder='Write a message...'; const send = document.createElement('button'); send.textContent='Send'; send.addEventListener('click', ()=>{ const t = input.value && input.value.trim(); if(!t) return; const from = cur && cur.username ? cur.username : prompt('Enter your display name'); sendDirectMessage(from, user, t); input.value=''; renderDM(); }); dmArea.appendChild(input); dmArea.appendChild(send);
+      }
+      renderDM();
+    });
+  </script>
+</body>
+</html>

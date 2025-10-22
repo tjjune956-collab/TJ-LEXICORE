@@ -1,0 +1,109 @@
+:root{
+  --bg:#0f1724;
+  --card:#0b1220;
+  --muted:#9aa4b2;
+  --accent:#7c3aed;
+}
+*{box-sizing:border-box}
+body{font-family:Inter,ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial; background:linear-gradient(180deg,#041022 0%,#051225 100%); color:#e6eef8; margin:0; padding:24px}
+.site-header{display:flex;gap:16px;align-items:center;justify-content:space-between;max-width:980px;margin:0 auto 24px}
+.site-header h1{margin:0;font-size:20px}
+.site-header .tagline{color:var(--muted);margin:0}
+nav a{color:var(--accent);text-decoration:none}
+#content{max-width:980px;margin:0 auto}
+.post{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));padding:16px;border-radius:10px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.03)}
+.post-title{margin:0 0 8px}
+.post-body{color:var(--muted);margin-bottom:8px}
+.post-media img, .post-media video{max-width:100%;border-radius:8px}
+.reactions{display:flex;gap:8px;margin-top:8px}
+.react-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px 10px;border-radius:8px;color:var(--muted);cursor:pointer}
+.react-count{margin-left:6px;color:var(--muted)}
+.react-btn.reacted{background:rgba(124,58,237,0.12);border-color:rgba(124,58,237,0.6);color:var(--accent)}
+.react-btn{transition:transform 160ms ease, background-color 180ms ease, color 180ms ease}
+.react-btn.pop{transform:scale(1.18);box-shadow:0 6px 18px rgba(0,0,0,0.35)}
+.admin-link{display:inline-block;margin-left:8px}
+.form-row{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.container{max-width:980px;margin:0 auto}
+.admin-panel{background:var(--card);padding:16px;border-radius:10px}
+/* auth */
+#auth{display:flex;gap:8px;align-items:center}
+#auth button{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px 8px;border-radius:6px;color:var(--muted)}
+
+.donate-btn{background:linear-gradient(90deg,var(--accent),#5b21b6);color:white;border:none;padding:6px 10px;border-radius:6px}
+
+/* mpesa modal */
+.mpesa-modal-backdrop{position:fixed;left:0;right:0;top:0;bottom:0;background:rgba(0,0,0,0.6);z-index:200}
+.mpesa-modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--card);padding:16px;border-radius:8px;z-index:201;max-width:420px;width:90%}
+.mpesa-modal .form-row{display:flex;gap:8px}
+
+/* Leaderboard modal */
+#leaderboardModal .mpesa-modal{max-width:760px}
+#leaderboardContent ol{padding-left:18px;margin-top:6px;margin-bottom:12px}
+#leaderboardContent h4{margin:8px 0 4px}
+#leaderboardModal .mpesa-modal h3{margin-top:0}
+#leaderboardModal .mpesa-modal button{background:var(--accent)}
+
+/* Watermark */
+body::after{
+  content: "TJ LEXICORE";
+  position:fixed;
+  left:50%; top:50%;
+  transform:translate(-50%,-50%) rotate(-25deg);
+  font-size:120px;
+  color:rgba(255,255,255,0.04);
+  pointer-events:none;
+  user-select:none;
+  z-index:0;
+}
+.post{position:relative;z-index:1}
+
+/* Comments */
+.comments{margin-top:12px;border-top:1px solid rgba(255,255,255,0.03);padding-top:8px}
+.comment{padding:8px;border-radius:6px;margin-bottom:8px;background:rgba(255,255,255,0.02);}
+.comment .meta{color:var(--muted);font-size:12px;margin-bottom:4px}
+.comment-form{display:flex;gap:8px;align-items:flex-start;margin-top:8px}
+.comment-form input{flex:1}
+.comment-form button{padding:6px 10px}
+input,textarea,select{padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+button{padding:8px 12px;border-radius:6px;background:var(--accent);border:none;color:white;cursor:pointer}
+.footer{max-width:980px;margin:40px auto;color:var(--muted)}
+
+/* Theme overrides */
+body[data-theme="light"]{ background: #f6f9fb; color:#0b1320 }
+body[data-theme="light"] .post{ background: #fff; color: #0b1320; border-color: rgba(0,0,0,0.04) }
+body[data-theme="light"] input,body[data-theme="light"] textarea,body[data-theme="light"] select{ background: #fff; color: #0b1320 }
+body[data-theme="dark"]{ background: linear-gradient(180deg,#041022 0%,#051225 100%); color:#e6eef8 }
+
+/* quiz option */
+.quiz-option{display:block;margin:6px 0;padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+.quiz-option.selected{background:rgba(124,58,237,0.12);border-color:rgba(124,58,237,0.6)}
+
+/* Chat styles (inline) */
+/* Chat styles removed (site uses comments + reactions only) */
+
+/* Avatars */
+.avatar{width:36px;height:36px;border-radius:50%;object-fit:cover}
+
+/* Fun Base chat */
+.funbox{border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:8px;max-height:420px;overflow:auto}
+.fun-msg{display:flex;gap:8px;align-items:flex-start;margin-bottom:8px}
+.fun-msg .meta{font-size:12px;color:var(--muted)}
+.fun-msg .bubble{background:rgba(255,255,255,0.02);padding:8px;border-radius:8px}
+
+/* Locked post styling */
+.locked-post{background:rgba(255,255,255,0.02);border:1px dashed rgba(255,255,255,0.04);padding:10px;border-radius:8px;margin-bottom:8px}
+.locked-post input.lock-input{padding:8px;border-radius:6px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;margin-right:8px}
+
+.secret-post{background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(255,255,255,0.005));padding:10px;border-radius:8px;margin-bottom:8px}
+
+/* Advanced reactions palette */
+.advanced-btn{background:linear-gradient(90deg,#ffd86f,#ff8a00);color:#111;border:none}
+.advanced-palette{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.adv-emoji{background:transparent;border:1px solid rgba(255,255,255,0.04);padding:6px;border-radius:6px;font-size:18px;cursor:pointer}
+.adv-burst{font-size:32px;opacity:0;transition:transform 800ms cubic-bezier(.2,.7,.2,1),opacity 800ms}
+.adv-burst.pop-burst{opacity:1;transform:translateY(-120px) scale(1.6);}
+
+/* Polls */
+#pollArea{margin-bottom:16px;padding:12px;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border:1px solid rgba(255,255,255,0.03)}
+.poll-option{margin:6px 6px 6px 0;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;cursor:pointer}
+.poll-option.reacted{background:rgba(124,58,237,0.12);border-color:rgba(124,58,237,0.6);color:var(--accent)}

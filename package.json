@@ -1,0 +1,12 @@
+{
+  "name": "tj-lexicore-server",
+  "version": "1.0.0",
+  "description": "Simple WebSocket server to sync reactions for TJ LEXICORE",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.13.0"
+  }
+}

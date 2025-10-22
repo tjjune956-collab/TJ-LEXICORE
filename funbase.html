@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FUN BASE — Community Chat</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header><h1>FUN BASE</h1><a href="index.html">Back</a></header>
+  <main class="container">
+    <div id="funArea"></div>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    // local funbase chat stored in 'tj_funbase'
+    function loadFun(){ try{ return JSON.parse(localStorage.getItem('tj_funbase')||'[]') }catch(e){return[]} }
+    function saveFun(a){ localStorage.setItem('tj_funbase', JSON.stringify(a)); }
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const cur = getCurrentUser();
+      const username = cur && cur.username ? cur.username : getReactiveId();
+      const users = loadUsers();
+      const myAvatar = (users.find(u=>u.username===username)||{}).avatar || '';
+      const area = document.getElementById('funArea');
+      const box = document.createElement('div');
+      box.style.maxHeight='400px'; box.style.overflow='auto'; box.style.border='1px solid rgba(255,255,255,0.06)'; box.style.padding='8px';
+      area.appendChild(box);
+
+      const input = document.createElement('input'); input.placeholder='Say something fun...'; input.style.width='60%';
+      const fileInput = document.createElement('input'); fileInput.type='file'; fileInput.accept='image/*'; fileInput.style.marginLeft='8px';
+      const send = document.createElement('button'); send.textContent='Send';
+
+      send.addEventListener('click', ()=>{
+        const cur = getCurrentUser(); if(cur && cur.disabled){ alert('Your account is disabled. Contact an admin.'); return }
+        const t = input.value && input.value.trim();
+        const files = fileInput.files && fileInput.files[0] ? [fileInput.files[0]] : []; // only one file allowed
+        if(!t && files.length === 0) return; // nothing
+        // validate image size (<=5MB)
+        if(files.length){ const f = files[0]; if(f.size > 5 * 1024 * 1024){ alert('Image too large. Max 5 MB allowed.'); return } }
+        const arr = loadFun();
+  function createEntry(mediaData){
+          const entry = { id: 'f_'+Date.now(), user: username, avatar: myAvatar, text: t, at: new Date().toISOString(), media: mediaData || '', mediaType: files.length ? (files[0].type.indexOf('video/')===0 ? 'video' : 'image') : '' };
+          arr.push(entry); saveFun(arr); input.value=''; fileInput.value=''; render();
+          if(typeof __ws !== 'undefined' && __ws && __ws.readyState === WebSocket.OPEN){ __ws.send(JSON.stringify({ type: 'funbase_message', data: entry })); }
+        }
+        if(files.length){ const reader = new FileReader(); reader.onload = ()=> createEntry(reader.result); reader.readAsDataURL(files[0]); } else { createEntry(null); }
+      });
+
+      area.appendChild(input); area.appendChild(fileInput); area.appendChild(send);
+
+      // handle incoming funbase messages via WS
+      try{
+        if(typeof __ws !== 'undefined' && __ws){
+          __ws.addEventListener('message', ev=>{
+            try{
+              const msg = JSON.parse(ev.data);
+              if(msg.type === 'funbase_message' && msg.data){ const arr = loadFun(); arr.push(msg.data); saveFun(arr); render(); }
+            }catch(e){}
+          });
+        }
+      }catch(e){}
+
+      function render(){
+        // auto-prune messages older than 7 days
+        const arr = loadFun();
+        const now = Date.now();
+        const weekMs = 7 * 24 * 60 * 60 * 1000;
+        const kept = arr.filter(m=> (new Date(m.at)).getTime() + weekMs > now );
+        if(kept.length !== arr.length){ saveFun(kept); }
+        box.innerHTML = '';
+        kept.forEach(m=>{
+          const el = document.createElement('div'); el.style.marginBottom='8px';
+          let mediaHtml = '';
+          if(m.media){ if(m.mediaType === 'image') mediaHtml = `<div style="margin-left:44px;margin-top:6px"><img src="${m.media}" style="max-width:320px;border-radius:8px"></div>`; }
+          // add admin/mod delete control if current user is admin/mod
+          const headerHtml = `<div style="display:flex;gap:8px;align-items:center"><img src="${m.avatar||''}" style="width:36px;height:36px;border-radius:50%"> <strong>${m.user}</strong> <span style="color:var(--muted);font-size:12px;margin-left:6px">${new Date(m.at).toLocaleString()}</span></div>`;
+          el.innerHTML = headerHtml + `<div style="margin-left:44px">${m.text}</div>` + mediaHtml;
+          // attach delete button if current user has role mod or admin
+          try{ const curU = getCurrentUser(); const users = loadUsers(); const rec = curU && curU.username ? users.find(u=>u.username === curU.username) : null; const role = rec && rec.role ? rec.role : 'user'; if(role === 'admin' || role === 'mod'){ const del = document.createElement('button'); del.textContent = 'Delete'; del.style.marginLeft = '8px'; del.style.background = 'linear-gradient(90deg,#ff4d4f,#d10000)'; del.addEventListener('click', ()=>{ if(confirm('Delete this message?')){ const arr2 = loadFun().filter(x=>x.id !== m.id); saveFun(arr2); render(); } }); el.querySelector('div') && el.querySelector('div').appendChild(del); } }catch(e){}
+          box.appendChild(el);
+        });
+      }
+
+      render();
+    });
+  </script>
+</body>
+</html>

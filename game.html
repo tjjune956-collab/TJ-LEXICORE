@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>TJ LEXICORE — Game</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header"><h1>Quick Tap Game</h1><a href="index.html">Back</a></header>
+  <main class="container">
+    <div class="admin-panel" style="text-align:center">
+      <p>Tap the target as many times as you can in 20 seconds.</p>
+      <div id="gameArea" style="margin:12px auto;max-width:420px">
+        <div id="target" style="width:120px;height:120px;border-radius:999px;background:linear-gradient(90deg,var(--accent),#5b21b6);margin:12px auto;display:flex;align-items:center;justify-content:center;color:white;font-size:28px;cursor:pointer">Tap</div>
+        <div style="display:flex;gap:12px;justify-content:center;margin-top:8px">
+          <div>Time: <span id="timeLeft">20</span>s</div>
+          <div>Score: <span id="score">0</span></div>
+        </div>
+        <div style="margin-top:12px">
+          <button id="startBtn">Start</button>
+          <button id="resetBtn">Reset</button>
+        </div>
+      </div>
+      <div style="margin-top:12px">
+        <h4>Local Leaderboard</h4>
+        <ol id="leaderboard"></ol>
+      </div>
+    </div>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    (function(){
+      const TIME = 20; let timeLeft = TIME; let score = 0; let running=false; let timerId=null;
+      const timeEl = document.getElementById('timeLeft'); const scoreEl = document.getElementById('score'); const target = document.getElementById('target'); const start = document.getElementById('startBtn'); const reset = document.getElementById('resetBtn'); const lb = document.getElementById('leaderboard');
+      function loadScores(){ try{return JSON.parse(localStorage.getItem('tj_game_scores')||'[]')}catch(e){return[]} }
+      function saveScore(rec){ const arr=loadScores(); arr.push(rec); localStorage.setItem('tj_game_scores', JSON.stringify(arr)); renderLb(); }
+      function renderLb(){ const arr = loadScores().sort((a,b)=>b.score-a.score).slice(0,10); lb.innerHTML=''; arr.forEach(r=>{ const li=document.createElement('li'); li.textContent = `${r.name||r.user||'Anon'} — ${r.score} (${new Date(r.at).toLocaleString()})`; lb.appendChild(li); }); }
+      function endGame(){ running=false; clearInterval(timerId); target.style.pointerEvents='none'; const user = (window.getCurrentUser && window.getCurrentUser()) || null; const name = user && user.username ? user.username : localStorage.getItem('tj_client_id') || 'Guest'; saveScore({ user: name, name: name, score, at: new Date().toISOString() }); alert('Time up! Score: '+score); }
+      function tick(){ timeLeft--; timeEl.textContent = timeLeft; if(timeLeft<=0) endGame(); }
+      target.addEventListener('click', ()=>{ if(!running) return; score++; scoreEl.textContent = score; });
+      start.addEventListener('click', ()=>{ if(running) return; running=true; timeLeft = TIME; score=0; scoreEl.textContent='0'; timeEl.textContent = TIME; target.style.pointerEvents='auto'; timerId = setInterval(tick,1000); });
+      reset.addEventListener('click', ()=>{ running=false; clearInterval(timerId); timeLeft=TIME; score=0; scoreEl.textContent='0'; timeEl.textContent=TIME; target.style.pointerEvents='none'; });
+      renderLb(); target.style.pointerEvents='none';
+    })();
+  </script>
+  <footer class="footer">© 2025 TJ LEXICORE. All rights reserved.</footer>
+</body>
+</html>
