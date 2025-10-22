@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Simple WebSocket server to sync reactions for TJ LEXICORE",
   "main": "server.js",
+  "homepage": "https://tjjune956-collab.github.io/TJ-LEXICORE"
   "scripts": {
     "start": "node server.js"
   },
