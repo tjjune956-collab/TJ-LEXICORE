@@ -4,7 +4,7 @@ A minimal static frontend site with an admin panel for adding posts. Reactions a
 
 Features:
 - Public feed (`index.html`) shows posts with title, body, image/video/link media, and emoji reactions.
-- Admin panel (`admin.html`) protected by a basic password (default: `shazmaz`) to add/delete posts.
+- Admin panel (`admin.html`) protected by a basic password (classified to add/delete posts.
 - Reactions are saved under `tj_reactions` in localStorage. Posts are saved under `tj_posts`.
 
 How to use:
